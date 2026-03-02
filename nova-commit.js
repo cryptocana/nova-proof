@@ -15,9 +15,9 @@ const path = require('path');
 // ── Config ────────────────────────────────────────────
 const CONFIG = {
   agentId: 0n,
-  contractAddress: '0xB3a7245d3AF3e4F85F0b5c715CE1810b74e9c5b7',
+  contractAddress: '0xf6B4AD5eA21342c3a5A387B627589AA6C140B61f',
   rpcUrl: 'https://base-mainnet.g.alchemy.com/v2/sHcreRgIM4yb_QuIEr335',
-  privateKey: '0x2b82e737aa5cbd7a6bdbc789e094eedc12d7efcde386a68de313d60588f839eb',
+  privateKey: '0x781b63ace8ec232eafbbbb5ff9d2408a85056e69558150f2005bf42894eb522f',
   logFile: path.join(__dirname, 'nova-task-log.json'),
 };
 

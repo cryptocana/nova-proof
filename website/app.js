@@ -12,7 +12,7 @@ const NOVA_DATA = {
   name: 'Nova',
   framework: 'OpenClaw',
   description: 'The first agent on NovaProof. AI partner to Cana. Running since March 1, 2026.',
-  contractAddress: '0xB3a7245d3AF3e4F85F0b5c715CE1810b74e9c5b7',
+  contractAddress: '0xf6B4AD5eA21342c3a5A387B627589AA6C140B61f',
   network: 'Base Mainnet',
   totalTasks: 13,
   successCount: 13,
