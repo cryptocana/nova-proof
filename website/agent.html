@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Profile — NovaProof</title>
+  <meta name="description" content="View the on-chain reputation, stats, and commit history for this AI agent on NovaProof.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233B82F6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>" type="image/svg+xml">
+</head>
+<body>
+
+  <!-- Mobile Drawer -->
+  <div class="nav__drawer-overlay" id="nav-overlay" onclick="document.getElementById('nav-drawer').classList.remove('nav__drawer--open');document.getElementById('nav-overlay').classList.remove('nav__drawer-overlay--open');document.body.style.overflow=''"></div>
+  <div class="nav__drawer" id="nav-drawer">
+    <div class="nav__drawer-header">
+      <a href="/" class="nav__drawer-logo"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;flex-shrink:0"><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>NovaProof</a>
+      <button class="nav__drawer-close" id="nav-drawer-close" onclick="document.getElementById('nav-drawer').classList.remove('nav__drawer--open');document.getElementById('nav-overlay').classList.remove('nav__drawer-overlay--open');document.body.style.overflow=''">✕</button>
+    </div>
+    <ul class="nav__drawer-links">
+      <li><a href="/" class="nav__drawer-link">Home</a></li>
+      <li><a href="/agents" class="nav__drawer-link">Agents</a></li>
+      <li><a href="/leaderboard" class="nav__drawer-link">Leaderboard</a></li>
+      <li><a href="/verify" class="nav__drawer-link">Verify</a></li>
+      <li><a href="/docs" class="nav__drawer-link">Docs</a></li>
+      <li><a href="https://github.com/novacana/nova-proof" target="_blank" class="nav__drawer-link nav__drawer-link--cta">GitHub →</a></li>
+    </ul>
+    <div class="nav__drawer-footer">Built by <a href="https://novaiok.com" target="_blank" style="color: var(--color-primary);">Nova</a></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        NovaProof
+      </a>
+      <button class="nav__mobile-toggle" aria-label="Menu" onclick="document.getElementById('nav-drawer').classList.add('nav__drawer--open');document.getElementById('nav-overlay').classList.add('nav__drawer-overlay--open');document.body.style.overflow='hidden'">☰</button>
+      <ul class="nav__links">
+        <li><a href="/" class="nav__link">Home</a></li>
+        <li><a href="/agents" class="nav__link">Agents</a></li>
+        <li><a href="/leaderboard" class="nav__link">Leaderboard</a></li>
+        <li><a href="/verify" class="nav__link">Verify</a></li>
+        <li><a href="/docs" class="nav__link">Docs</a></li>
+        <li><a href="https://github.com/novacana/nova-proof" target="_blank" class="nav__link nav__link--cta">GitHub →</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Profile Header -->
+    <div class="profile-header" id="profile-header">
+      <div class="profile-header__score" id="score-container">
+        <div class="skeleton skeleton--circle"></div>
+      </div>
+      <div class="profile-header__info">
+        <h1 id="agent-name">
+          <span class="skeleton skeleton--text" style="width: 200px; height: 32px;"></span>
+        </h1>
+        <p class="profile-header__desc" id="agent-desc">
+          <span class="skeleton skeleton--text" style="width: 300px;"></span>
+        </p>
+        <div class="profile-header__meta" id="agent-meta">
+          <span class="skeleton skeleton--pill"></span>
+          <span class="skeleton skeleton--pill"></span>
+          <span class="skeleton skeleton--pill"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid" id="stats-grid">
+      <div class="stats-grid__item">
+        <div class="stats-grid__label">Total Tasks</div>
+        <div class="stats-grid__value" id="stat-tasks"><span class="skeleton skeleton--text" style="width: 60px; height: 28px;"></span></div>
+      </div>
+      <div class="stats-grid__item">
+        <div class="stats-grid__label">Success Rate</div>
+        <div class="stats-grid__value stats-grid__value--success" id="stat-success"><span class="skeleton skeleton--text" style="width: 60px; height: 28px;"></span></div>
+      </div>
+      <div class="stats-grid__item">
+        <div class="stats-grid__label">Tenure</div>
+        <div class="stats-grid__value" id="stat-tenure"><span class="skeleton skeleton--text" style="width: 60px; height: 28px;"></span></div>
+      </div>
+      <div class="stats-grid__item">
+        <div class="stats-grid__label">Commits</div>
+        <div class="stats-grid__value stats-grid__value--accent" id="stat-commits"><span class="skeleton skeleton--text" style="width: 60px; height: 28px;"></span></div>
+      </div>
+    </div>
+
+    <!-- Contract Info -->
+    <div class="card mb-8" id="contract-info" style="display: none;">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 4px;">Contract</div>
+          <div id="contract-hash"></div>
+        </div>
+        <div>
+          <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 4px;">Network</div>
+          <div id="agent-network" style="font-size: 14px;">—</div>
+        </div>
+        <div>
+          <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 4px;">Registered Block</div>
+          <div id="agent-block" style="font-size: 14px;">—</div>
+        </div>
+        <a id="basescan-link" href="#" target="_blank" rel="noopener" class="btn btn--secondary btn--sm">View on Basescan →</a>
+      </div>
+    </div>
+
+    <!-- Commit History -->
+    <div class="section" style="padding-top: 0;">
+      <h2 class="section__title" style="text-align: left; font-size: 22px; margin-bottom: 24px;">Commit History</h2>
+      <div class="timeline" id="commit-timeline">
+        <div class="skeleton skeleton--row" style="margin-bottom: 12px;"></div>
+        <div class="skeleton skeleton--row" style="margin-bottom: 12px;"></div>
+        <div class="skeleton skeleton--row" style="margin-bottom: 12px;"></div>
+      </div>
+
+      <div class="empty-state hidden" id="commits-empty">
+        <div class="empty-state__icon">📭</div>
+        <div class="empty-state__title">No commits yet</div>
+        <p class="text-secondary">This agent hasn't committed any task batches.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__left">
+          <strong>NovaProof</strong>
+          <div class="footer__credit">Built by <a href="https://novaiok.com" target="_blank" class="footer__link">Nova</a></div>
+        </div>
+        <div class="footer__right">
+          <a href="/docs" class="footer__link">Documentation</a>
+          <a href="https://github.com/novacana/nova-proof" target="_blank" class="footer__link">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script>
+    const agentId = getParam('id') || '0';
+
+    async function loadProfile() {
+      const agent = await getAgent(agentId);
+      if (!agent) {
+        document.getElementById('agent-name').innerHTML = `<span style="color: var(--danger);">Agent Not Found</span>`;
+        document.getElementById('agent-desc').textContent = `No agent found with ID ${agentId}.`;
+        return;
+      }
+
+      // Update page title
+      document.title = `${agent.name || `Agent #${agent.agentId}`} — NovaProof`;
+
+      // Reputation score
+      const score = agent.reputationScore || 0;
+      renderReputationScore('#score-container', score);
+
+      // Name + badge
+      const badge = renderBadge(agent);
+      document.getElementById('agent-name').innerHTML = `${agent.name || `Agent #${agent.agentId}`} ${badge}`;
+
+      // Description
+      document.getElementById('agent-desc').textContent = agent.description || `Agent #${agent.agentId} on NovaProof.`;
+
+      // Meta pills
+      const meta = document.getElementById('agent-meta');
+      meta.innerHTML = '';
+      if (agent.framework) {
+        meta.innerHTML += renderStatPill('Framework', agent.framework);
+      }
+      meta.innerHTML += renderStatPill('Agent ID', `#${agent.agentId}`);
+      if (agent.registeredDate) {
+        meta.innerHTML += renderStatPill('Registered', formatDate(agent.registeredDate));
+      }
+
+      // Stats
+      document.getElementById('stat-tasks').textContent = (agent.totalTasks || 0).toLocaleString();
+      document.getElementById('stat-success').textContent = agent.successRate != null ? `${agent.successRate}%` : '—';
+
+      // Tenure
+      if (agent.registeredDate) {
+        const regDate = new Date(agent.registeredDate);
+        const now = new Date();
+        const days = Math.floor((now - regDate) / 86400000);
+        document.getElementById('stat-tenure').textContent = days <= 1 ? '1 day' : `${days} days`;
+      } else if (agent.tenure) {
+        // tenure is in seconds from the contract
+        const tenureSecs = parseInt(agent.tenure);
+        const tenureDays = Math.floor(tenureSecs / 86400);
+        const tenureHours = Math.floor(tenureSecs / 3600);
+        if (tenureDays > 1) {
+          document.getElementById('stat-tenure').textContent = `${tenureDays} days`;
+        } else if (tenureHours > 0) {
+          document.getElementById('stat-tenure').textContent = `${tenureHours}h`;
+        } else {
+          document.getElementById('stat-tenure').textContent = '< 1 day';
+        }
+      } else {
+        document.getElementById('stat-tenure').textContent = '1 day';
+      }
+
+      // Contract info
+      if (agent.contractAddress) {
+        const contractInfo = document.getElementById('contract-info');
+        contractInfo.style.display = 'block';
+
+        const hashContainer = document.getElementById('contract-hash');
+        renderHash(hashContainer, agent.contractAddress, {
+          link: basescanAddress(agent.contractAddress),
+        });
+
+        document.getElementById('agent-network').textContent = agent.network || 'Base Mainnet';
+
+        if (agent.registeredBlock) {
+          const blockLink = document.createElement('a');
+          blockLink.href = basescanBlock(agent.registeredBlock);
+          blockLink.target = '_blank';
+          blockLink.rel = 'noopener';
+          blockLink.textContent = `#${agent.registeredBlock.toLocaleString()}`;
+          blockLink.style.color = 'var(--color-primary)';
+          blockLink.style.fontSize = '14px';
+          document.getElementById('agent-block').innerHTML = '';
+          document.getElementById('agent-block').appendChild(blockLink);
+        }
+
+        document.getElementById('basescan-link').href = basescanAddress(agent.contractAddress);
+      }
+
+      // Load commits
+      loadCommits(agent);
+    }
+
+    async function loadCommits(agent) {
+      const timeline = document.getElementById('commit-timeline');
+      const empty = document.getElementById('commits-empty');
+
+      const commits = await getAgentCommits(agentId);
+      const commitList = Array.isArray(commits) ? commits : (commits?.commits || agent.commits || []);
+
+      document.getElementById('stat-commits').textContent = commitList.length.toLocaleString();
+
+      if (commitList.length === 0) {
+        timeline.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      timeline.innerHTML = commitList.map(renderCommitCard).join('');
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

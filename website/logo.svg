@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Left chain link body -->
+  <path d="M38 50 C38 34 22 28 14 36 C8 42 8 58 14 64 C22 72 38 66 38 50 Z" fill="#3B82F6"/>
+  <!-- Right chain link body -->
+  <path d="M62 50 C62 66 78 72 86 64 C92 58 92 42 86 36 C78 28 62 34 62 50 Z" fill="#3B82F6"/>
+  <!-- Center connector top -->
+  <path d="M38 38 L62 38 C66 38 66 44 62 44 L38 44 C34 44 34 38 38 38 Z" fill="#3B82F6"/>
+  <!-- Center connector bottom -->
+  <path d="M38 56 L62 56 C66 56 66 62 62 62 L38 62 C34 62 34 56 38 56 Z" fill="#3B82F6"/>
+  <!-- Left hole -->
+  <ellipse cx="20" cy="50" rx="10" ry="12" fill="#0a0a0a"/>
+  <!-- Right hole -->
+  <ellipse cx="80" cy="50" rx="10" ry="12" fill="#0a0a0a"/>
+  <!-- Left arrow pointing left -->
+  <polyline points="24,50 18,45 18,55 24,50" fill="#3B82F6"/>
+  <line x1="24" y1="50" x2="16" y2="50" stroke="#3B82F6" stroke-width="2"/>
+  <!-- Right arrow pointing right -->
+  <polyline points="76,50 82,45 82,55 76,50" fill="#3B82F6"/>
+  <line x1="76" y1="50" x2="84" y2="50" stroke="#3B82F6" stroke-width="2"/>
+</svg>

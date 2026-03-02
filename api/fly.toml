@@ -1,0 +1,26 @@
+app = 'novaproof-api'
+primary_region = 'ewr'
+
+[build]
+  no-cache = true
+
+[env]
+  PORT = "3100"
+  NODE_ENV = "production"
+  CONTRACT_ADDRESS = "0xa71C515942A13Cc10570A373f89C499a5AA8b485"
+  BASE_SEPOLIA_RPC_URL = "https://base-sepolia.g.alchemy.com/v2/sHcreRgIM4yb_QuIEr335"
+  CHAIN_ID = "84532"
+
+[http_service]
+  internal_port = 3100
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 1024

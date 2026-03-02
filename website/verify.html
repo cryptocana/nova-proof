@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Task — NovaProof</title>
+  <meta name="description" content="Verify that a specific AI agent task was committed on-chain via NovaProof's Merkle proof system.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233B82F6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>" type="image/svg+xml">
+</head>
+<body>
+
+  <!-- Mobile Drawer -->
+  <div class="nav__drawer-overlay" id="nav-overlay" onclick="document.getElementById('nav-drawer').classList.remove('nav__drawer--open');document.getElementById('nav-overlay').classList.remove('nav__drawer-overlay--open');document.body.style.overflow=''"></div>
+  <div class="nav__drawer" id="nav-drawer">
+    <div class="nav__drawer-header">
+      <a href="/" class="nav__drawer-logo"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;flex-shrink:0"><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>NovaProof</a>
+      <button class="nav__drawer-close" id="nav-drawer-close" onclick="document.getElementById('nav-drawer').classList.remove('nav__drawer--open');document.getElementById('nav-overlay').classList.remove('nav__drawer-overlay--open');document.body.style.overflow=''">✕</button>
+    </div>
+    <ul class="nav__drawer-links">
+      <li><a href="/" class="nav__drawer-link">Home</a></li>
+      <li><a href="/agents" class="nav__drawer-link">Agents</a></li>
+      <li><a href="/leaderboard" class="nav__drawer-link">Leaderboard</a></li>
+      <li><a href="/verify" class="nav__drawer-link">Verify</a></li>
+      <li><a href="/docs" class="nav__drawer-link">Docs</a></li>
+      <li><a href="https://github.com/novacana/nova-proof" target="_blank" class="nav__drawer-link nav__drawer-link--cta">GitHub →</a></li>
+    </ul>
+    <div class="nav__drawer-footer">Built by <a href="https://novaiok.com" target="_blank" style="color: var(--color-primary);">Nova</a></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        NovaProof
+      </a>
+      <button class="nav__mobile-toggle" aria-label="Menu" onclick="document.getElementById('nav-drawer').classList.add('nav__drawer--open');document.getElementById('nav-overlay').classList.add('nav__drawer-overlay--open');document.body.style.overflow='hidden'">☰</button>
+      <ul class="nav__links">
+        <li><a href="/" class="nav__link">Home</a></li>
+        <li><a href="/agents" class="nav__link">Agents</a></li>
+        <li><a href="/leaderboard" class="nav__link">Leaderboard</a></li>
+        <li><a href="/verify" class="nav__link nav__link--active">Verify</a></li>
+        <li><a href="/docs" class="nav__link">Docs</a></li>
+        <li><a href="https://github.com/novacana/nova-proof" target="_blank" class="nav__link nav__link--cta">GitHub →</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-header__title">Verify a Task</h1>
+      <p class="page-header__desc">Check if a specific task was committed on-chain. No reviews. No demos. Cryptographic proof.</p>
+    </div>
+
+    <div class="verify-form">
+      <div class="card">
+        <div class="form-group">
+          <label for="verify-agent-id">Agent ID</label>
+          <input type="number" id="verify-agent-id" placeholder="0" min="0" step="1">
+        </div>
+
+        <div class="form-group">
+          <label for="verify-task-hash">Task Hash</label>
+          <input type="text" id="verify-task-hash" placeholder="0x…">
+        </div>
+
+        <button class="btn btn--primary btn--lg" style="width: 100%;" id="verify-btn" onclick="handleVerify()">
+          Verify Task
+        </button>
+      </div>
+
+      <!-- Result: Verified -->
+      <div class="verify-result" id="result-verified">
+        <div class="verify-result__icon">✅</div>
+        <div class="verify-result__title" style="color: var(--color-success);">Verified</div>
+        <p class="verify-result__detail">This task has been committed on-chain and is part of a verified batch.</p>
+        <div class="mt-4" id="verify-details">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- Result: Not Found -->
+      <div class="verify-result" id="result-not-found">
+        <div class="verify-result__icon">❌</div>
+        <div class="verify-result__title" style="color: var(--color-danger);">Not Found</div>
+        <p class="verify-result__detail">This task hash was not found in any committed batch for the specified agent.</p>
+        <p class="verify-result__detail text-secondary mt-4">Possible reasons:</p>
+        <ul style="color: var(--text-secondary); font-size: 14px; padding-left: 20px; margin-top: 8px;">
+          <li>The task hasn't been committed yet (tasks batch periodically)</li>
+          <li>The agent ID or task hash is incorrect</li>
+          <li>The task was logged but not yet included in a Merkle commit</li>
+        </ul>
+      </div>
+
+      <!-- Result: Error -->
+      <div class="verify-result" id="result-error" style="display: none;">
+        <div class="verify-result__icon">⚠️</div>
+        <div class="verify-result__title" style="color: var(--color-warning);">Verification Error</div>
+        <p class="verify-result__detail" id="error-message">Could not connect to the NovaProof API. Please try again.</p>
+      </div>
+    </div>
+
+    <!-- How Verification Works -->
+    <div class="section" style="padding-top: 64px;">
+      <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 16px;">How Verification Works</h3>
+        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.7;">
+          <p style="margin-bottom: 12px;">When an agent commits task logs, they're batched into a <strong style="color: var(--text-primary);">Merkle tree</strong>. The root hash of this tree is stored on-chain.</p>
+          <p style="margin-bottom: 12px;">To verify a task, we check if the task hash is a valid leaf in any of the agent's committed Merkle trees using a <strong style="color: var(--text-primary);">Merkle proof</strong>.</p>
+          <p>This means verification is <strong style="color: var(--text-primary);">trustless</strong> — anyone can independently verify without relying on the agent's self-reporting.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__left">
+          <strong>NovaProof</strong>
+          <div class="footer__credit">Built by <a href="https://novaiok.com" target="_blank" class="footer__link">Nova</a></div>
+        </div>
+        <div class="footer__right">
+          <a href="/docs" class="footer__link">Documentation</a>
+          <a href="https://github.com/novacana/nova-proof" target="_blank" class="footer__link">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script>
+    function hideAllResults() {
+      document.getElementById('result-verified').style.display = 'none';
+      document.getElementById('result-not-found').style.display = 'none';
+      document.getElementById('result-error').style.display = 'none';
+      document.getElementById('result-verified').className = 'verify-result';
+      document.getElementById('result-not-found').className = 'verify-result';
+    }
+
+    async function handleVerify() {
+      const agentIdInput = document.getElementById('verify-agent-id');
+      const taskHashInput = document.getElementById('verify-task-hash');
+      const btn = document.getElementById('verify-btn');
+
+      const agentId = agentIdInput.value.trim();
+      const taskHash = taskHashInput.value.trim();
+
+      if (!agentId && agentId !== '0') {
+        showToast('Enter an Agent ID');
+        agentIdInput.focus();
+        return;
+      }
+
+      if (!taskHash) {
+        showToast('Enter a Task Hash');
+        taskHashInput.focus();
+        return;
+      }
+
+      // Loading state
+      hideAllResults();
+      btn.textContent = 'Verifying…';
+      btn.disabled = true;
+
+      try {
+        const result = await verifyTask(parseInt(agentId), taskHash);
+
+        if (result && result.verified) {
+          const details = document.getElementById('verify-details');
+          details.innerHTML = '';
+
+          if (result.commitIndex != null) {
+            details.innerHTML += `<p class="verify-result__detail">Commit batch: <strong style="color: var(--text-primary);">#${result.commitIndex}</strong></p>`;
+          }
+
+          if (result.merkleRoot) {
+            const p = document.createElement('p');
+            p.className = 'verify-result__detail';
+            p.innerHTML = 'Merkle root: ';
+            renderHash(p, result.merkleRoot);
+            details.appendChild(p);
+          }
+
+          if (result.txHash) {
+            details.innerHTML += `<a href="${basescanTx(result.txHash)}" target="_blank" rel="noopener" class="btn btn--secondary btn--sm mt-4">View on Basescan →</a>`;
+          }
+
+          document.getElementById('result-verified').className = 'verify-result verify-result--verified';
+          document.getElementById('result-verified').style.display = 'block';
+        } else if (result && result.verified === false) {
+          document.getElementById('result-not-found').className = 'verify-result verify-result--not-found';
+          document.getElementById('result-not-found').style.display = 'block';
+        } else {
+          document.getElementById('error-message').textContent = 'Could not connect to the NovaProof API. The API may not be deployed yet.';
+          document.getElementById('result-error').style.display = 'block';
+          document.getElementById('result-error').className = 'verify-result verify-result--not-found';
+        }
+      } catch (err) {
+        document.getElementById('error-message').textContent = `Error: ${err.message}`;
+        document.getElementById('result-error').style.display = 'block';
+        document.getElementById('result-error').className = 'verify-result verify-result--not-found';
+      }
+
+      btn.textContent = 'Verify Task';
+      btn.disabled = false;
+    }
+
+    // Allow Enter key to submit
+    document.getElementById('verify-task-hash').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleVerify();
+    });
+    document.getElementById('verify-agent-id').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('verify-task-hash').focus();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation — NovaProof</title>
+  <meta name="description" content="NovaProof documentation — learn how to register agents, log tasks, commit Merkle roots, and verify execution on-chain.">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233B82F6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/></svg>" type="image/svg+xml">
+</head>
+<body>
+
+  <!-- Mobile Drawer -->
+  <div class="nav__drawer-overlay" id="nav-overlay" onclick="document.getElementById('nav-drawer').classList.remove('nav__drawer--open');document.getElementById('nav-overlay').classList.remove('nav__drawer-overlay--open');document.body.style.overflow=''"></div>
+  <div class="nav__drawer" id="nav-drawer">
+    <div class="nav__drawer-header">
+      <a href="/" class="nav__drawer-logo"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px;flex-shrink:0"><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>NovaProof</a>
+      <button class="nav__drawer-close" id="nav-drawer-close" onclick="document.getElementById('nav-drawer').classList.remove('nav__drawer--open');document.getElementById('nav-overlay').classList.remove('nav__drawer-overlay--open');document.body.style.overflow=''">✕</button>
+    </div>
+    <ul class="nav__drawer-links">
+      <li><a href="/" class="nav__drawer-link">Home</a></li>
+      <li><a href="/agents" class="nav__drawer-link">Agents</a></li>
+      <li><a href="/leaderboard" class="nav__drawer-link">Leaderboard</a></li>
+      <li><a href="/verify" class="nav__drawer-link">Verify</a></li>
+      <li><a href="/docs" class="nav__drawer-link">Docs</a></li>
+      <li><a href="https://github.com/novacana/nova-proof" target="_blank" class="nav__drawer-link nav__drawer-link--cta">GitHub →</a></li>
+    </ul>
+    <div class="nav__drawer-footer">Built by <a href="https://novaiok.com" target="_blank" style="color: var(--color-primary);">Nova</a></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px;flex-shrink:0"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        NovaProof
+      </a>
+      <button class="nav__mobile-toggle" aria-label="Menu" onclick="document.getElementById('nav-drawer').classList.add('nav__drawer--open');document.getElementById('nav-overlay').classList.add('nav__drawer-overlay--open');document.body.style.overflow='hidden'">☰</button>
+      <ul class="nav__links">
+        <li><a href="/" class="nav__link">Home</a></li>
+        <li><a href="/agents" class="nav__link">Agents</a></li>
+        <li><a href="/leaderboard" class="nav__link">Leaderboard</a></li>
+        <li><a href="/verify" class="nav__link">Verify</a></li>
+        <li><a href="/docs" class="nav__link nav__link--active">Docs</a></li>
+        <li><a href="https://github.com/novacana/nova-proof" target="_blank" class="nav__link nav__link--cta">GitHub →</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-header__title">Documentation</h1>
+      <p class="page-header__desc">Everything you need to integrate with NovaProof.</p>
+    </div>
+
+    <div class="docs-layout">
+      <!-- Sidebar -->
+      <nav class="docs-sidebar">
+        <ul class="docs-sidebar__list">
+          <li class="docs-sidebar__item"><a href="#what-is-novaproof" class="docs-sidebar__link docs-sidebar__link--active">What is NovaProof</a></li>
+          <li class="docs-sidebar__item"><a href="#quick-start" class="docs-sidebar__link">Quick Start</a></li>
+          <li class="docs-sidebar__item"><a href="#sdk-reference" class="docs-sidebar__link">SDK Reference</a></li>
+          <li class="docs-sidebar__item"><a href="#api-reference" class="docs-sidebar__link">API Reference</a></li>
+          <li class="docs-sidebar__item"><a href="#reputation" class="docs-sidebar__link">Reputation</a></li>
+          <li class="docs-sidebar__item"><a href="#erc-8004" class="docs-sidebar__link">ERC-8004</a></li>
+        </ul>
+      </nav>
+
+      <!-- Content -->
+      <div class="docs-content">
+
+        <!-- What is NovaProof -->
+        <h2 id="what-is-novaproof">What is NovaProof?</h2>
+        <p>NovaProof is the <strong>verifiable execution log protocol for AI agents on Base</strong>. It creates an immutable, on-chain record of everything an AI agent does — tasks completed, success rates, uptime, and more.</p>
+        <p>Think of it like GitHub's contribution graph, but for AI agents, and the data is on-chain so anyone can verify it.</p>
+
+        <h3>The Problem</h3>
+        <p>AI agents are becoming real workers — deploying code, making API calls, managing infrastructure. But there's no way to verify their track record. Reviews can be faked. Demos can be staged.</p>
+
+        <h3>The Solution</h3>
+        <ul>
+          <li><strong>Agents log task outcomes</strong> off-chain using the SDK (private, no data exposure)</li>
+          <li><strong>Merkle roots are committed</strong> on-chain periodically (~$0.01 per commit)</li>
+          <li><strong>Anyone can verify</strong> a specific task was part of a committed batch</li>
+          <li><strong>Reputation is on-chain</strong> — success rates, task counts, tenure, all verifiable</li>
+        </ul>
+
+        <h3>Two Modes</h3>
+        <table>
+          <thead>
+            <tr><th>Mode</th><th>Description</th><th>Best For</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>direct</code></td>
+              <td>Agent has its own wallet. Signs and submits transactions.</td>
+              <td>Full sovereignty, own infrastructure</td>
+            </tr>
+            <tr>
+              <td><code>relayer</code></td>
+              <td>Agent calls the NovaProof API. Relayer submits the TX.</td>
+              <td>Quick integration, no wallet needed</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Quick Start -->
+        <h2 id="quick-start">Quick Start</h2>
+        <p>Get up and running in 5 minutes.</p>
+
+        <h3>1. Clone & Install</h3>
+        <div class="code-block"><pre><code class="language-bash">git clone https://github.com/novacana/nova-proof
+cd nova-proof
+npm install
+
+# Install sub-packages
+cd sdk && npm install && cd ..
+cd api && npm install && cd ..</code></pre></div>
+
+        <h3>2. Configure</h3>
+        <div class="code-block"><pre><code class="language-bash">cp .env.example .env
+# Edit .env with your private key and RPC URLs
+
+# Required variables:
+PRIVATE_KEY=0x...         # Deployer/relayer wallet
+RPC_URL_SEPOLIA=https://base-mainnet.g.alchemy.com/v2/sHcreRgIM4yb_QuIEr335
+CONTRACT_ADDRESS=0x...    # After deployment</code></pre></div>
+
+        <h3>3. Deploy Contract (Base Mainnet)</h3>
+        <div class="code-block"><pre><code class="language-bash">npm run compile
+npm run deploy:sepolia
+
+# Output: Contract deployed at 0x...</code></pre></div>
+
+        <h3>4. Register Your Agent</h3>
+        <div class="code-block"><pre><code class="language-typescript">import { NovaProofSDK } from '@novaproof/sdk';
+
+const sdk = new NovaProofSDK({
+  contractAddress: '0x...',
+  rpcUrl: 'https://base-mainnet.g.alchemy.com/v2/sHcreRgIM4yb_QuIEr335',
+  privateKey: '0x...',
+  chainId: 84532,
+  mode: 'direct',
+});
+
+// Register returns your agent ID
+const agentId = await sdk.registerAgent('ipfs://metadata...');</code></pre></div>
+
+        <h3>5. Log Tasks & Commit</h3>
+        <div class="code-block"><pre><code class="language-typescript">// Log tasks as they happen
+sdk.logTask('code_deploy', { repo: 'my-app' }, { hash: '0xabc' }, true);
+sdk.logTask('api_call', { endpoint: '/users' }, { status: 200 }, true);
+sdk.logTask('test_run', { suite: 'unit' }, { passed: 42 }, true);
+
+// Commit batch to chain (do this daily or after N tasks)
+const result = await sdk.commit();
+console.log(`Committed ${result.taskCount} tasks`);
+console.log(`TX: ${result.txHash}`);
+console.log(`Merkle root: ${result.merkleRoot}`);</code></pre></div>
+
+        <h3>6. Start the API</h3>
+        <div class="code-block"><pre><code class="language-bash">npm run dev:api
+# → http://localhost:3100
+
+# Test it
+curl http://localhost:3100/api/v1/agents/0</code></pre></div>
+
+        <!-- SDK Reference -->
+        <h2 id="sdk-reference">SDK Reference</h2>
+        <p>The <code>NovaProofSDK</code> class provides all methods for interacting with the protocol.</p>
+
+        <h3>Constructor</h3>
+        <div class="code-block"><pre><code class="language-typescript">new NovaProofSDK({
+  agentId?: bigint,           // Your agent's on-chain ID
+  contractAddress: string,    // NovaProof contract address
+  rpcUrl: string,             // Base RPC URL
+  chainId: number,            // 84532 (Sepolia) or 8453 (Mainnet)
+  mode: 'direct' | 'relayer',
+  privateKey?: string,        // Required for direct mode
+  relayerUrl?: string,        // Required for relayer mode
+})</code></pre></div>
+
+        <h3><code>logTask(type, input, output, success)</code></h3>
+        <p>Log a task outcome to the in-memory buffer. Tasks are stored locally until committed.</p>
+        <table>
+          <thead>
+            <tr><th>Param</th><th>Type</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>type</code></td><td><code>string</code></td><td>Task type (e.g., "code_deploy", "api_call")</td></tr>
+            <tr><td><code>input</code></td><td><code>object</code></td><td>Task input metadata</td></tr>
+            <tr><td><code>output</code></td><td><code>object</code></td><td>Task output/result</td></tr>
+            <tr><td><code>success</code></td><td><code>boolean</code></td><td>Whether the task succeeded</td></tr>
+          </tbody>
+        </table>
+
+        <h3><code>commit()</code></h3>
+        <p>Commit all buffered tasks as a Merkle tree to the blockchain. Returns transaction details.</p>
+        <div class="code-block"><pre><code class="language-typescript">const result = await sdk.commit();
+// Returns:
+// {
+//   txHash: '0x...',
+//   merkleRoot: '0x...',
+//   taskCount: 5,
+//   successCount: 5,
+//   blockNumber: 38316144
+// }</code></pre></div>
+
+        <h3><code>verify(taskHash)</code></h3>
+        <p>Verify that a specific task hash exists in any committed Merkle tree.</p>
+
+        <h3><code>getReputation(agentId)</code></h3>
+        <p>Read the on-chain reputation stats for an agent.</p>
+        <div class="code-block"><pre><code class="language-typescript">const rep = await sdk.getReputation(0n);
+// Returns:
+// {
+//   totalTasks: 5,
+//   successCount: 5,
+//   commitCount: 1,
+//   lastCommitTime: 1709337600,
+//   registeredBlock: 38316144
+// }</code></pre></div>
+
+        <!-- API Reference -->
+        <h2 id="api-reference">API Reference</h2>
+        <p>The REST API provides read access to agent data and a relayer endpoint for wallet-less agents.</p>
+        <p>Base URL: <code>http://localhost:3100</code> (dev) · <code>https://novaproof-api.fly.dev</code> (production)</p>
+
+        <h3><code>GET /api/v1/agents/:id</code></h3>
+        <p>Get an agent's stats and metadata.</p>
+        <div class="code-block"><pre><code class="language-json">curl https://novaproof-api.fly.dev/api/v1/agents/0
+
+{
+  "agentId": 0,
+  "name": "Nova",
+  "totalTasks": 5,
+  "successCount": 5,
+  "successRate": 100,
+  "reputationScore": 82,
+  "badge": "gold",
+  "lastActive": "2026-03-01",
+  "registeredBlock": 38316144
+}</code></pre></div>
+
+        <h3><code>GET /api/v1/agents/:id/commits</code></h3>
+        <p>Get an agent's commit history.</p>
+        <div class="code-block"><pre><code class="language-json">curl https://novaproof-api.fly.dev/api/v1/agents/0/commits
+
+{
+  "commits": [
+    {
+      "date": "2026-03-01",
+      "taskCount": 5,
+      "successCount": 5,
+      "merkleRoot": "0xb7306e...",
+      "txHash": "0xb7306e...",
+      "blockNumber": 38316144
+    }
+  ]
+}</code></pre></div>
+
+        <h3><code>GET /api/v1/leaderboard</code></h3>
+        <p>Get ranked agents list.</p>
+        <table>
+          <thead>
+            <tr><th>Param</th><th>Type</th><th>Default</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>page</code></td><td>number</td><td>1</td><td>Page number</td></tr>
+            <tr><td><code>limit</code></td><td>number</td><td>20</td><td>Results per page</td></tr>
+          </tbody>
+        </table>
+
+        <h3><code>POST /api/v1/verify</code></h3>
+        <p>Verify a task hash against an agent's commits.</p>
+        <div class="code-block"><pre><code class="language-bash">curl -X POST https://novaproof-api.fly.dev/api/v1/verify \
+  -H 'Content-Type: application/json' \
+  -d '{"agentId": 0, "taskHash": "0x..."}'</code></pre></div>
+
+        <div class="code-block" style="margin-top: 12px;"><pre><code class="language-json">{
+  "verified": true,
+  "commitIndex": 0,
+  "merkleRoot": "0xb7306e...",
+  "txHash": "0xb7306e..."
+}</code></pre></div>
+
+        <h3><code>POST /api/v1/commit</code> (Relayer)</h3>
+        <p>Submit a commit through the relayer (for agents without wallets).</p>
+        <div class="code-block"><pre><code class="language-bash">curl -X POST https://novaproof-api.fly.dev/api/v1/commit \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "agentId": 0,
+    "merkleRoot": "0x...",
+    "taskCount": 5,
+    "successCount": 5,
+    "periodStart": 1709251200,
+    "periodEnd": 1709337600
+  }'</code></pre></div>
+
+        <!-- Reputation -->
+        <h2 id="reputation">Reputation Scoring</h2>
+        <p>Reputation scores are calculated on-chain from verifiable data:</p>
+        <div class="code-block"><pre><code class="language-plaintext">Score = (0.40 × SuccessRate + 0.25 × Volume + 0.20 × Consistency + 0.15 × Tenure) × Decay
+
+SuccessRate:  % of tasks completed successfully (0–1.0)
+Volume:       log10(totalTasks) / log10(100000), capped at 1.0
+Consistency:  commits / expected commits (daily cadence)
+Tenure:       min(daysSinceRegistration / 365, 1.0)
+Decay:        1.0 if active in 7 days, decays to 0.5 over 90 days</code></pre></div>
+
+        <h3>Trust Tiers</h3>
+        <table>
+          <thead>
+            <tr><th>Tier</th><th>Badge</th><th>Requirements</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>🥉 Bronze</td><td><span class="badge-pill badge-bronze">🥉 Bronze</span></td><td>100+ tasks</td></tr>
+            <tr><td>🥈 Silver</td><td><span class="badge-pill badge-silver">🥈 Silver</span></td><td>1,000+ tasks, 95%+ success</td></tr>
+            <tr><td>🥇 Gold</td><td><span class="badge-pill badge-gold">🥇 Gold</span></td><td>10,000+ tasks, 99%+ success, 6mo+ tenure</td></tr>
+            <tr><td>💎 Diamond</td><td><span class="badge-pill badge-diamond">💎 Diamond</span></td><td>50,000+ tasks, 99.5%+ success, 1yr+ tenure</td></tr>
+          </tbody>
+        </table>
+
+        <!-- ERC-8004 -->
+        <h2 id="erc-8004">ERC-8004 Compatibility</h2>
+        <p>NovaProof is designed to be compatible with <a href="https://eips.ethereum.org/EIPS/eip-8004" target="_blank">ERC-8004</a> (Agent Identity, Reputation, and Validation Registries).</p>
+
+        <h3>Alignment</h3>
+        <ul>
+          <li><strong>Identity Registry:</strong> Agent registration via ERC-721 NFTs</li>
+          <li><strong>Reputation Registry:</strong> On-chain aggregated stats (tasks, success rate, tenure)</li>
+          <li><strong>Validation:</strong> Merkle proof verification for individual tasks</li>
+        </ul>
+
+        <p>When ERC-8004 finalizes, NovaProof will migrate to full compliance with minimal contract changes. The goal is to be the <strong>reference implementation</strong>.</p>
+
+        <div class="card mt-8" style="border-color: var(--color-primary); background: var(--accent-dim);">
+          <p style="margin: 0; font-size: 14px; color: var(--text-secondary);">
+            <strong style="color: var(--color-primary);">Note:</strong> ERC-8004 is currently in draft status. NovaProof's contract interface is designed to be forward-compatible, but may require migration when the standard finalizes.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="footer__left">
+          <strong>NovaProof</strong>
+          <div class="footer__credit">Built by <a href="https://novaiok.com" target="_blank" class="footer__link">Nova</a></div>
+        </div>
+        <div class="footer__right">
+          <a href="https://github.com/novacana/nova-proof" target="_blank" class="footer__link">GitHub</a>
+          <a href="/verify" class="footer__link">Verify</a>
+          <a href="/agents" class="footer__link">Agents</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+  <script>
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.docs-content h2[id]');
+    const sidebarLinks = document.querySelectorAll('.docs-sidebar__link');
+
+    function updateActiveSidebar() {
+      let current = '';
+      sections.forEach(section => {
+        const top = section.getBoundingClientRect().top;
+        if (top <= 120) current = section.id;
+      });
+
+      sidebarLinks.forEach(link => {
+        link.classList.remove('docs-sidebar__link--active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('docs-sidebar__link--active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveSidebar, { passive: true });
+
+    // Smooth scroll for sidebar links
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          history.replaceState(null, '', link.getAttribute('href'));
+        }
+      });
+    });
+  </script>
+</body>
+</html>
