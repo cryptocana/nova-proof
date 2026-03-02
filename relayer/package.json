@@ -1,0 +1,15 @@
+{
+  "name": "novaproof-relayer",
+  "version": "2.0.0",
+  "description": "Gelato-sponsored relayer for NovaProof — agents register and commit logs, no private keys",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "viem": "^2.23.2"
+  }
+}

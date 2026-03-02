@@ -7,9 +7,9 @@ primary_region = 'ewr'
 [env]
   PORT = "3100"
   NODE_ENV = "production"
-  CONTRACT_ADDRESS = "0xa71C515942A13Cc10570A373f89C499a5AA8b485"
-  BASE_SEPOLIA_RPC_URL = "https://base-sepolia.g.alchemy.com/v2/sHcreRgIM4yb_QuIEr335"
-  CHAIN_ID = "84532"
+  CONTRACT_ADDRESS = "0xA88CBE718eAF91EDe4304a595f88069fA214fce6"
+  BASE_RPC_URL = "https://base-mainnet.g.alchemy.com/v2/sHcreRgIM4yb_QuIEr335"
+  CHAIN_ID = "8453"
 
 [http_service]
   internal_port = 3100

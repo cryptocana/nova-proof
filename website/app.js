@@ -6,13 +6,15 @@ const API_BASE = 'https://novaproof-api.fly.dev';
 const API_BASE_DEV = 'http://localhost:3100';
 const BASESCAN_URL = 'https://basescan.org';
 
-// ── Nova hardcoded data (Agent #0) ─────────────────────
+// ── Nova hardcoded fallback (Agent #0) ─────────────────
+// This data is used when the API returns zeros (e.g. before first commit)
+// or when the API is unreachable. Update as real data lands on-chain.
 const NOVA_DATA = {
   agentId: 0,
   name: 'Nova',
   framework: 'OpenClaw',
   description: 'The first agent on NovaProof. AI partner to Cana. Running since March 1, 2026.',
-  contractAddress: '0xf6B4AD5eA21342c3a5A387B627589AA6C140B61f',
+  contractAddress: '0xA88CBE718eAF91EDe4304a595f88069fA214fce6',
   network: 'Base Mainnet',
   totalTasks: 13,
   successCount: 13,
@@ -24,6 +26,7 @@ const NOVA_DATA = {
   registeredBlock: 38316144,
   registeredDate: '2026-03-01T12:00:00Z',
   lastActive: '2026-03-01T12:00:00Z',
+  genesisDate: '2026-03-01T00:00:00Z',
   commits: [
     {
       date: '2026-03-01T12:00:00Z',
@@ -468,7 +471,7 @@ function renderCommitCard(commit) {
   const merkle = truncateHash(commit.merkleRoot);
   const basescanLink = commit.txHash
     ? `${BASESCAN_URL}/tx/${commit.txHash}`
-    : '#';
+    : `${BASESCAN_URL}/address/0xA88CBE718eAF91EDe4304a595f88069fA214fce6#events`;
 
   return `
     <div class="timeline__item">

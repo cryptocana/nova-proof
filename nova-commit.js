@@ -13,11 +13,25 @@ const fs = require('fs');
 const path = require('path');
 
 // ── Config ────────────────────────────────────────────
+// Load .env if present
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  fs.readFileSync(envPath, 'utf8').split('\n').forEach(line => {
+    const [k, ...v] = line.split('=');
+    if (k && v.length && !process.env[k.trim()]) {
+      process.env[k.trim()] = v.join('=').trim();
+    }
+  });
+}
+
 const CONFIG = {
   agentId: 0n,
-  contractAddress: '0xf6B4AD5eA21342c3a5A387B627589AA6C140B61f',
-  rpcUrl: 'https://base-mainnet.g.alchemy.com/v2/sHcreRgIM4yb_QuIEr335',
-  privateKey: '0x781b63ace8ec232eafbbbb5ff9d2408a85056e69558150f2005bf42894eb522f',
+  contractAddress: process.env.CONTRACT_ADDRESS || '0xA88CBE718eAF91EDe4304a595f88069fA214fce6',
+  rpcUrl: process.env.BASE_RPC_URL || process.env.BASE_MAINNET_RPC_URL || 'https://mainnet.base.org',
+  // ⚠️ PRIVATE_KEY must be set in environment — never hardcode keys
+  // Nova submits via the relayer API (novaproof-api.fly.dev) instead of direct wallet
+  privateKey: process.env.NOVA_COMMIT_KEY || process.env.PRIVATE_KEY || null,
+  relayerUrl: process.env.RELAYER_URL || 'https://novaproof-api.fly.dev/api/v1/commit',
   logFile: path.join(__dirname, 'nova-task-log.json'),
 };
 
@@ -97,20 +111,45 @@ async function commit() {
   const periodStart = Math.min(...log.pending.map(t => t.timestamp));
   const periodEnd = Math.max(Math.max(...log.pending.map(t => t.timestamp)), periodStart + 60);
 
-  // Submit on-chain
-  const account = privateKeyToAccount(CONFIG.privateKey);
-  const publicClient = createPublicClient({ chain: base, transport: http(CONFIG.rpcUrl) });
-  const walletClient = createWalletClient({ account, chain: base, transport: http(CONFIG.rpcUrl) });
-
-  const hash = await walletClient.writeContract({
-    address: CONFIG.contractAddress,
-    abi: ABI,
-    functionName: 'commitLog',
-    args: [CONFIG.agentId, merkleRoot, taskCount, successCount, periodStart, periodEnd],
-  });
-
-  console.log(`\n⏳ Waiting for confirmation...`);
-  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  // Submit on-chain via relayer API (preferred — no private key needed in Nova's env)
+  let hash, receipt;
+  if (!CONFIG.privateKey) {
+    console.log(`📡 Submitting via relayer: ${CONFIG.relayerUrl}`);
+    const https = require('https');
+    const body = JSON.stringify({
+      agentId: CONFIG.agentId.toString(),
+      merkleRoot,
+      taskCount,
+      successCount,
+      periodStart,
+      periodEnd,
+    });
+    const res = await fetch(CONFIG.relayerUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(`Relayer error: ${JSON.stringify(data)}`);
+    hash = data.txHash;
+    console.log(`⏳ Relayer submitted. TX: ${hash}`);
+    // Poll for receipt
+    const publicClient = createPublicClient({ chain: base, transport: http(CONFIG.rpcUrl) });
+    receipt = await publicClient.waitForTransactionReceipt({ hash });
+  } else {
+    // Direct wallet submit (requires NOVA_COMMIT_KEY in env)
+    const account = privateKeyToAccount(CONFIG.privateKey.startsWith('0x') ? CONFIG.privateKey : `0x${CONFIG.privateKey}`);
+    const publicClient = createPublicClient({ chain: base, transport: http(CONFIG.rpcUrl) });
+    const walletClient = createWalletClient({ account, chain: base, transport: http(CONFIG.rpcUrl) });
+    hash = await walletClient.writeContract({
+      address: CONFIG.contractAddress,
+      abi: ABI,
+      functionName: 'commitLog',
+      args: [CONFIG.agentId, merkleRoot, taskCount, successCount, periodStart, periodEnd],
+    });
+    console.log(`\n⏳ Waiting for confirmation...`);
+    receipt = await publicClient.waitForTransactionReceipt({ hash });
+  }
 
   // Move pending → committed
   const commitRecord = {
